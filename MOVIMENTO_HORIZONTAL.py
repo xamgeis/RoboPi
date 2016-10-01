@@ -142,7 +142,7 @@ def left():
 # HSV range we use to detect the colored object. 
 # In this example, pre-defined for a green ball
 #
-
+# HSV Ranges: H: 0-180 , S: 0-255 V: 0-255
 
 #Padrão RED
 #Hmin = 0
@@ -154,6 +154,7 @@ def left():
 
 # Yellow Banana
 #Hue is around 53
+"""
 Hmin = 43
 Hmax = 63
 
@@ -162,6 +163,19 @@ Smax = 112
 
 Vmin = 181
 Vmax = 211
+asdklfjalsk
+"""
+
+# Purple Hackathon Bag
+Hmin =  140 # 250 /2
+Hmax = 	165
+
+Smin = 150
+Smax = 160
+
+Vmin = 86
+Vmax = 155
+
 
  # Creates a HSV array values ​​(minimum and maximum)
 rangeMin = np.array([Hmin, Smin, Vmin], np.uint8)
