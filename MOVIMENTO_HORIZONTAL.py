@@ -80,56 +80,56 @@ gpio.output(16, True) #Motor B - Rasp 2
 
 
 def front():
-# Motor 1
- gpio.output(13, True)
- gpio.output(15, False)
-# Motor 2
- gpio.output(18, False)
- gpio.output(22, True)
-	
+	# Motor 1
+	gpio.output(13, True)
+	gpio.output(15, False)
+	# Motor 2
+	gpio.output(18, False)
+	gpio.output(22, True)
+
 def back():
-# Motor 1
- gpio.output(13, False)
- gpio.output(15, True)
-# Motor 2
- gpio.output(18, True)
- gpio.output(22, False)
- 
+	# Motor 1
+	gpio.output(13, False)
+	gpio.output(15, True)
+	# Motor 2
+	gpio.output(18, True)
+	gpio.output(22, False)
+
  
 def stop():
-# Motor 1
- gpio.output(18, False)
- gpio.output(22, False)
-# Motor 2
- gpio.output(13, False)
- gpio.output(15, False)
+	# Motor 1
+	gpio.output(18, False)
+	gpio.output(22, False)
+	# Motor 2
+	gpio.output(13, False)
+	gpio.output(15, False)
 
 
 def right():
-# Motor 1
- gpio.output(13, True)
- gpio.output(15, False)
-# Motor 2
- gpio.output(18, True)
- gpio.output(22, False)
+	# Motor 1
+	gpio.output(13, True)
+	gpio.output(15, False)
+	# Motor 2
+	gpio.output(18, True)
+	gpio.output(22, False)
 
 
 def left():
-# Motor 1
- gpio.output(13, False)
- gpio.output(15, True)
-# Motor 2
- gpio.output(18, False)
- gpio.output(22, True)
+	# Motor 1
+	gpio.output(13, False)
+	gpio.output(15, True)
+	# Motor 2
+	gpio.output(18, False)
+	gpio.output(22, True)
 
  
- def adjustZ(area):
-  if(area<=120):
-      front()
-  elif(area>=600):
-      back()
-  else:
-      stop()
+def adjustZ(area):
+	  if(area<=120):
+		front()
+	  elif(area>=600):
+		back()
+	  else:
+		stop()
 	  
 	  
 #----------------------------------------------------------------
@@ -167,14 +167,14 @@ asdklfjalsk
 """
 
 # Purple Hackathon Bag
-Hmin =  140 # 250 /2
-Hmax = 	165
+Hmin =  109 # 250 /2
+Hmax = 	154
 
-Smin = 150
-Smax = 160
+Smin = 95
+Smax = 204
 
-Vmin = 86
-Vmax = 155
+Vmin = 126
+Vmax = 255
 
 
  # Creates a HSV array values ​​(minimum and maximum)
@@ -199,32 +199,34 @@ height = 120
 
 # Set a size for the frames (discarding the PyramidDown
 if capture.isOpened():
-  capture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, width)
-  capture.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, height)
+	capture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, width)
+	capture.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, height)
 
   
 while True:
-    ret, input = capture.read()
-    imgHSV = cv2.cvtColor(input,cv2.cv.CV_BGR2HSV)	
-    imgThresh = cv2.inRange(imgHSV, rangeMin, rangeMax)
-    imgErode = cv2.erode(imgThresh, None, iterations = 3)
-    moments = cv2.moments(imgErode, True)
-    area = moments['m00']
-    if moments['m00'] >= minArea:
-     print(area)
-     adjustZ(area)    
-    else:
-     stop()
-    
-    cv2.imshow("input",input)
-    cv2.imshow("HSV", imgHSV)
-    cv2.imshow("Thre", imgThresh)
-    cv2.imshow("Erosion", imgErode)
+	ret, input = capture.read()
+	
+	input = cv2.GaussianBlur(input,(5,5),0) #apply gaussian blur
+	imgHSV = cv2.cvtColor(input,cv2.cv.CV_BGR2HSV)	
+	imgThresh = cv2.inRange(imgHSV, rangeMin, rangeMax)
+	imgErode = cv2.erode(imgThresh, None, iterations = 3)
+	moments = cv2.moments(imgErode, True)
+	area = moments['m00']
+	if moments['m00'] >= minArea:
+		print(area)
+		adjustZ(area)    
+	else:
+		stop()
 
-    if cv.WaitKey(10) == 27:
-        break
-	cv.DestroyAllWindows()	
-	gpio.cleanup()	
+	cv2.imshow("input",input)
+	cv2.imshow("HSV", imgHSV)
+	cv2.imshow("Thre", imgThresh)
+	cv2.imshow("Erosion", imgErode)
+
+	if cv.WaitKey(10) == 27:
+		break
+		cv.DestroyAllWindows()	
+		gpio.cleanup()	
 	
 
 	

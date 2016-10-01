@@ -2,8 +2,8 @@
 import cv2
 import numpy as np
 #'optional' argument is required for trackbar creation parameters
-def nothing:
-pass
+def nothing(x):
+	pass
  
 #Capture video from the stream
 cap = cv2.VideoCapture(0)
@@ -27,35 +27,37 @@ cv2.createTrackbar(vh, wnd,0,255,nothing)
 
 #begin our 'infinite' while loop
 while(1):
-    #read the streamed frames (we previously named this cap)
-    ret,frame=cap.read()
- 
-    #it is common to apply a blur to the frame
-    frame=cv2.GaussianBlur(frame,(5,5),0)
- 
-    #convert from a BGR stream to an HSV stream
-    hsv=cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+	#read the streamed frames (we previously named this cap)
+	ret,frame=cap.read()
 
-    #read trackbar positions for each trackbar
-    hul=cv2.getTrackbarPos(hl, wnd)
-    huh=cv2.getTrackbarPos(hh, wnd)
-    sal=cv2.getTrackbarPos(sl, wnd)
-    sah=cv2.getTrackbarPos(sh, wnd)
-    val=cv2.getTrackbarPos(vl, wnd)
-    vah=cv2.getTrackbarPos(vh, wnd)
- 
-    #make array for final values
-    HSVLOW=np.array([hul,sal,val])
-    HSVHIGH=np.array([huh,sah,vah])
- 
+	#it is common to apply a blur to the frame
+	frame=cv2.GaussianBlur(frame,(5,5),0)
+
+	#convert from a BGR stream to an HSV stream
+	hsv=cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+	#read trackbar positions for each trackbar
+	hul=cv2.getTrackbarPos(hl, wnd)
+	huh=cv2.getTrackbarPos(hh, wnd)
+	sal=cv2.getTrackbarPos(sl, wnd)
+	sah=cv2.getTrackbarPos(sh, wnd)
+	val=cv2.getTrackbarPos(vl, wnd)
+	vah=cv2.getTrackbarPos(vh, wnd)
+
+	#make array for final values
+	HSVLOW=np.array([hul,sal,val])
+	HSVHIGH=np.array([huh,sah,vah])
+
 	#create a mask for that range
 	mask = cv2.inRange(hsv,HSVLOW, HSVHIGH)
 	res = cv2.bitwise_and(frame,frame, mask =mask)
- 
-    cv2.imshow(wnd, res)
-    #allow us to quiot the proces by pressing 'q'
-    k = cv2.waitKey(5) &amp;&amp; 0xFF
-    if k == ord('q'):
-        break
+
+	cv2.imshow(wnd, res)
+	cv2.imshow('yay', frame)
+
+	#allow us to quit the proces by pressing 'q'
+	k = cv2.waitKey(5) & 0xFF
+	if k == ord('q'):
+		break
  
 cv2.destroyAllWindows()
