@@ -5,8 +5,8 @@ from time import sleep
 gpio.setmode(gpio.BOARD)
 
 motor1a = 16
-motor1b = 20
-motor1e = 21
+motor1b = 18
+motor1e = 22
 
 
 gpio.setup(motor1a, gpio.OUT)
