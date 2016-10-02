@@ -21,41 +21,24 @@ import RPi.GPIO as gpio
 gpio.setmode(gpio.BOARD)
 # Alerts off
 gpio.setwarnings(False)
-#---------------------------------------
-#Declare pins as GPIO - Motor A
  
-#Activating pin for motor A via Rasp 1
-gpio.setup(7, gpio.OUT)
- 
-#Activating pin motor A via Rasp 2 
-gpio.setup(11, gpio.OUT)
- 
-# Start pin 13 as output - Motor A
-gpio.setup(13, gpio.OUT)
- 
-#Start pin 15 as output - Motor A
-gpio.setup(15, gpio.OUT)
- 
-#---------------------------------------
-#Declare pins as GPIO - Motor B
- 
-#pino de ativação do motor B via Rasp 1
-gpio.setup(26, gpio.OUT)
- 
-#pino de ativação do motor B via Rasp 2 
-gpio.setup(16, gpio.OUT)
- 
-# Iniciar Pino 5 como saida - Motor B
-gpio.setup(18, gpio.OUT)
- 
-#Iniciar Pino 22 como saida - Motor B
-gpio.setup(22, gpio.OUT)
- 
+#-------------------------------- 
+# CONSTANTS
+#-------------------------------- 
+# Parameters capture of image width x height
+width = 160
+height = 120
+
+#Horizontal Frame Border
+xThresh = width * .3  #threshold is 30% of the border
+
+yThresh = width * .3  #threshold is 30% of the border
 
 
 #-----------------------------------------
 # Allow L298N is controlled by the GPIO:
 #---------------------------------------
+"""
 #Initial values - True - Motor A ativado
 gpio.output(7, True) #Motor A - Rasp 1
 gpio.output(11, True) #Motor A - Rasp 2
@@ -64,7 +47,7 @@ gpio.output(11, True) #Motor A - Rasp 2
 gpio.output(26, True) #Motor B - Rasp 1
 gpio.output(16, True) #Motor B - Rasp 2
 #---------------------------------------
-
+"""
 
 
 # Motor da left
@@ -77,16 +60,14 @@ gpio.output(16, True) #Motor B - Rasp 2
 # F e V -> front
 # V e F -> TrⳊ# F e F -> stop
 
-
-motorRa = 16
+# Define pins for motors
+motorRa = 16 
 motorRb = 18
 motorRe = 22
 
 motorLa = 36
 motorLb = 38
 motorLe = 40
-
-gpio.setwarnings(False)
 
 gpio.setup(motorRa, gpio.OUT)
 gpio.setup(motorRb, gpio.OUT)
@@ -97,52 +78,63 @@ gpio.setup(motorLb, gpio.OUT)
 gpio.setup(motorLe, gpio.OUT)
 
 def front():
-  gpio.output(motorRa, gpio.HIGH)
-  gpio.output(motorRb, gpio.LOW)
-  gpio.output(motorRe, gpio.HIGH)
+	gpio.output(motorRa, gpio.HIGH)
+	gpio.output(motorRb, gpio.LOW)
+	gpio.output(motorRe, gpio.HIGH)
 
-  gpio.output(motorLa, gpio.HIGH)
-  gpio.output(motorLb, gpio.LOW)
-  gpio.output(motorLe, gpio.HIGH)
+	gpio.output(motorLa, gpio.HIGH)
+	gpio.output(motorLb, gpio.LOW)
+	gpio.output(motorLe, gpio.HIGH)
 
 def back():
-  gpio.output(motorRa, gpio.LOW)
-  gpio.output(motorRb, gpio.HIGH)
-  gpio.output(motorRe, gpio.HIGH)
+	gpio.output(motorRa, gpio.LOW)
+	gpio.output(motorRb, gpio.HIGH)
+	gpio.output(motorRe, gpio.HIGH)
 
-  gpio.output(motorLa, gpio.LOW)
-  gpio.output(motorLb, gpio.HIGH)
-  gpio.output(motorLe, gpio.HIGH)
+	gpio.output(motorLa, gpio.LOW)
+	gpio.output(motorLb, gpio.HIGH)
+	gpio.output(motorLe, gpio.HIGH)
 
 def stop():
-  gpio.output(motorRe, gpio.LOW)
-  gpio.output(motorLe, gpio.LOW)
+	gpio.output(motorRe, gpio.LOW)
+	gpio.output(motorLe, gpio.LOW)
 
 
 def right():
-  # Motor right - stop 
-  gpio.output(motorRe, gpio.LOW)
+	# Motor right - stop 
+	gpio.output(motorRe, gpio.LOW)
 
-  # Motor left - go foward
-  gpio.output(motorRe, gpio.LOW)
+	# Motor left - go foward
+	gpio.output(motorLa, gpio.HIGH)
+	gpio.output(motorLb, gpio.LOW)
+	gpio.output(motorLe, gpio.HIGH)
 
 def left():
-  # Motor Right - go foward
-  gpio.output(motorRa, gpio.HIGH)
-  gpio.output(motorRb, gpio.LOW)
-  gpio.output(motorRe, gpio.HIGH)
+	# Motor Right - go foward
+	gpio.output(motorRa, gpio.HIGH)
+	gpio.output(motorRb, gpio.LOW)
+	gpio.output(motorRe, gpio.HIGH)
 
-  # Motor Left - stop
-  gpio.output(motorLe, gpio.LOW)
+	# Motor Left - stop
+	gpio.output(motorLe, gpio.LOW)
 
- 
+# Minimum area to be detected
+minArea = 100
+
+# Robot does not move between [followArea , retreatArea] 
+followArea = 700 # max area to follow
+retreatArea = 2000	# min area to retreat 
+
+# moves RoboPi away and towards the user 
 def adjustZ(area):
-	  if(area<=120):
-		  front()
-	  elif(area>=600):
-		  back()
-	  else:
-		  stop()
+	# follow
+	if(area<=followArea):
+		front()
+	# retreat
+	elif(area>=retreatArea):
+		back()
+	else:
+		stop()
 	  
 	  
 #----------------------------------------------------------------
@@ -194,8 +186,6 @@ Vmax = 255
 rangeMin = np.array([Hmin, Smin, Vmin], np.uint8)
 rangeMax = np.array([Hmax, Smax, Vmax], np.uint8)
 
-# Minimum area to be detected
-minArea = 50
 
 
 #cv.NamedWindow("input")
@@ -206,9 +196,6 @@ cv.NamedWindow("Erosion")
 
 capture = cv2.VideoCapture(0)
 
-# Parameters capture image of width x height
-width = 160
-height = 120
 
 # Set a size for the frames (discarding the PyramidDown
 if capture.isOpened():
@@ -226,11 +213,27 @@ while True:
 	moments = cv2.moments(imgErode, True)
 	area = moments['m00']
 	if moments['m00'] >= minArea:
-		print(area)
-		adjustZ(area)    
+		#print(area)
+		x = moments['m10'] / moments['m00']
+		y = moments['m01'] / moments['m00']
+
+		# add green dot for center of object	
+		cv2.circle(input, (int(x), int(y)), 5, (0,255,0), -1) 
+		print(x, ", ", y)
+		
+		#adjust bot horizontal 
+		if x < xThresh:
+			left()
+		elif x > (width + xThresh):
+			right()
+		else:
+			#move bot foward or back	
+			adjustZ(area)    
 	else:
+		#no Area detected, so stop
 		stop()
-  #TODO Add moving left and right to image 
+
+	#TODO Add moving left and right to image 
 
   
 	cv2.imshow("input",input)
@@ -240,8 +243,6 @@ while True:
 
 	if cv.WaitKey(10) == 27:
 		break
-		cv.DestroyAllWindows()	
-		gpio.cleanup()	
-	
 
-	
+cv.DestroyAllWindows()	
+gpio.cleanup()	
