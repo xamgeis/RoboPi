@@ -28,8 +28,6 @@ import random
 from creds import *
 import requests
 import json
-import re
-from memcache import Client
 
 gpio.setmode(gpio.BOARD)
 # Alerts off
@@ -226,7 +224,7 @@ if capture.isOpened():
 # setup for Amazon Echo
 #------------------------
 #Settings
-lights = [29, 31] # GPIO Pins [5,6] with LED's conneted
+lights = [5, 6] # GPIO Pins with LED's conneted
 device = "plughw:1" # Name of your microphone/soundcard in arecord -L
 
 #Setup
@@ -234,12 +232,6 @@ recorded = False
 servers = ["127.0.0.1:11211"]
 mc = Client(servers, debug=1)
 path = os.path.realpath(__file__).rstrip(os.path.basename(__file__))
-
-#setup pins for lights
-gpio.setup(lights[0], GPIO.OUT)
-gpio.setup(lights[1], GPIO.OUT)
-gpio.output(lights[0], GPIO.LOW)
-gpio.output(lights[1], GPIO.LOW)
 
 #functions:
 
@@ -336,7 +328,7 @@ def start():
 	audio = ""
 
 	#record for a few seconds
-	howLong = 3 # in seconds
+	howLong = 5 # in seconds
 	start = seconds()
 	print "start: " , start
 	print "end: " , (start+howLong)
@@ -367,6 +359,7 @@ for x in range(0, 3):
 	time.sleep(.1)
 	GPIO.output(lights[0], GPIO.LOW)
 #start()
+
 
 #-----------------------------  
 
@@ -405,13 +398,10 @@ while True:
 	cv2.imshow("HSV", imgHSV)
 	cv2.imshow("Thre", imgThresh)
 	cv2.imshow("Erosion", imgErode)
-	
-	#check for spacebar
-	if cv.WaitKey(10) == 32:
+
+	if cv.WaitKey(10) == 27:
 		#TODO: activate alexa services
-		start()
-	#check for esc
-	elif cv.WaitKey(10) == 27:
+
 		break
 
 cv.DestroyAllWindows()	

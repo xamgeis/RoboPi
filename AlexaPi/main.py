@@ -112,7 +112,8 @@ def start():
 	last = GPIO.input(button)
 	print last
 	while True:
-		val = GPIO.input(button)
+		#val = GPIO.input(button)
+		# Get input from keyboard
 		GPIO.wait_for_edge(button, GPIO.FALLING) # we wait for the button to be pressed
 		GPIO.output(lights[1], GPIO.HIGH)
 		inp = alsaaudio.PCM(alsaaudio.PCM_CAPTURE, alsaaudio.PCM_NORMAL, device)
