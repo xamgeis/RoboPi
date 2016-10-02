@@ -34,6 +34,13 @@ xThresh = width * .3  #threshold is 30% of the border
 
 yThresh = width * .3  #threshold is 30% of the border
 
+# Minimum area to be detected
+minArea = 100
+
+# Robot does not move between [followArea , retreatArea] 
+followArea = 800 # max area to follow
+retreatArea = 2100	# min area to retreat 
+
 
 #-----------------------------------------
 # Allow L298N is controlled by the GPIO:
@@ -78,6 +85,7 @@ gpio.setup(motorLb, gpio.OUT)
 gpio.setup(motorLe, gpio.OUT)
 
 def front():
+	print "foward"
 	gpio.output(motorRa, gpio.HIGH)
 	gpio.output(motorRb, gpio.LOW)
 	gpio.output(motorRe, gpio.HIGH)
@@ -87,6 +95,7 @@ def front():
 	gpio.output(motorLe, gpio.HIGH)
 
 def back():
+	print "back"
 	gpio.output(motorRa, gpio.LOW)
 	gpio.output(motorRb, gpio.HIGH)
 	gpio.output(motorRe, gpio.HIGH)
@@ -96,11 +105,13 @@ def back():
 	gpio.output(motorLe, gpio.HIGH)
 
 def stop():
+	print "Stopping"
 	gpio.output(motorRe, gpio.LOW)
 	gpio.output(motorLe, gpio.LOW)
 
 
 def right():
+	print "right"
 	# Motor right - stop 
 	gpio.output(motorRe, gpio.LOW)
 
@@ -110,6 +121,7 @@ def right():
 	gpio.output(motorLe, gpio.HIGH)
 
 def left():
+	print "left"
 	# Motor Right - go foward
 	gpio.output(motorRa, gpio.HIGH)
 	gpio.output(motorRb, gpio.LOW)
@@ -118,12 +130,7 @@ def left():
 	# Motor Left - stop
 	gpio.output(motorLe, gpio.LOW)
 
-# Minimum area to be detected
-minArea = 100
 
-# Robot does not move between [followArea , retreatArea] 
-followArea = 700 # max area to follow
-retreatArea = 2000	# min area to retreat 
 
 # moves RoboPi away and towards the user 
 def adjustZ(area):
@@ -191,7 +198,7 @@ rangeMax = np.array([Hmax, Smax, Vmax], np.uint8)
 #cv.NamedWindow("input")
 #cv.NamedWindow("HSV")
 #cv.NamedWindow("Thre")
-cv.NamedWindow("Erosion")
+#cv.NamedWindow("Erosion")
 
 
 capture = cv2.VideoCapture(0)
@@ -213,18 +220,18 @@ while True:
 	moments = cv2.moments(imgErode, True)
 	area = moments['m00']
 	if moments['m00'] >= minArea:
-		#print(area)
+		print(area)
 		x = moments['m10'] / moments['m00']
 		y = moments['m01'] / moments['m00']
 
 		# add green dot for center of object	
 		cv2.circle(input, (int(x), int(y)), 5, (0,255,0), -1) 
-		print(x, ", ", y)
+		#print(x, ", ", y)
 		
 		#adjust bot horizontal 
 		if x < xThresh:
 			left()
-		elif x > (width + xThresh):
+		elif x > (width - xThresh):
 			right()
 		else:
 			#move bot foward or back	
@@ -233,14 +240,13 @@ while True:
 		#no Area detected, so stop
 		stop()
 
-	#TODO Add moving left and right to image 
-
-  
+	
+	"""
 	cv2.imshow("input",input)
 	cv2.imshow("HSV", imgHSV)
 	cv2.imshow("Thre", imgThresh)
 	cv2.imshow("Erosion", imgErode)
-
+	"""
 	if cv.WaitKey(10) == 27:
 		break
 
