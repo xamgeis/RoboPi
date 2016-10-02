@@ -78,58 +78,71 @@ gpio.output(16, True) #Motor B - Rasp 2
 # V e F -> TrⳊ# F e F -> stop
 
 
+motorRa = 16
+motorRb = 18
+motorRe = 22
+
+motorLa = 36
+motorLb = 38
+motorLe = 40
+
+gpio.setwarnings(False)
+
+gpio.setup(motorRa, gpio.OUT)
+gpio.setup(motorRb, gpio.OUT)
+gpio.setup(motorRe, gpio.OUT)
+
+gpio.setup(motorLa, gpio.OUT)
+gpio.setup(motorLb, gpio.OUT)
+gpio.setup(motorLe, gpio.OUT)
 
 def front():
-	# Motor 1
-	gpio.output(13, True)
-	gpio.output(15, False)
-	# Motor 2
-	gpio.output(18, False)
-	gpio.output(22, True)
+  gpio.output(motorRa, gpio.HIGH)
+  gpio.output(motorRb, gpio.LOW)
+  gpio.output(motorRe, gpio.HIGH)
+
+  gpio.output(motorLa, gpio.HIGH)
+  gpio.output(motorLb, gpio.LOW)
+  gpio.output(motorLe, gpio.HIGH)
 
 def back():
-	# Motor 1
-	gpio.output(13, False)
-	gpio.output(15, True)
-	# Motor 2
-	gpio.output(18, True)
-	gpio.output(22, False)
+  gpio.output(motorRa, gpio.LOW)
+  gpio.output(motorRb, gpio.HIGH)
+  gpio.output(motorRe, gpio.HIGH)
 
- 
+  gpio.output(motorLa, gpio.LOW)
+  gpio.output(motorLb, gpio.HIGH)
+  gpio.output(motorLe, gpio.HIGH)
+
 def stop():
-	# Motor 1
-	gpio.output(18, False)
-	gpio.output(22, False)
-	# Motor 2
-	gpio.output(13, False)
-	gpio.output(15, False)
+  gpio.output(motorRe, gpio.LOW)
+  gpio.output(motorLe, gpio.LOW)
 
 
 def right():
-	# Motor 1
-	gpio.output(13, True)
-	gpio.output(15, False)
-	# Motor 2
-	gpio.output(18, True)
-	gpio.output(22, False)
+  # Motor right - stop 
+  gpio.output(motorRe, gpio.LOW)
 
+  # Motor left - go foward
+  gpio.output(motorRe, gpio.LOW)
 
 def left():
-	# Motor 1
-	gpio.output(13, False)
-	gpio.output(15, True)
-	# Motor 2
-	gpio.output(18, False)
-	gpio.output(22, True)
+  # Motor Right - go foward
+  gpio.output(motorRa, gpio.HIGH)
+  gpio.output(motorRb, gpio.LOW)
+  gpio.output(motorRe, gpio.HIGH)
+
+  # Motor Left - stop
+  gpio.output(motorLe, gpio.LOW)
 
  
 def adjustZ(area):
 	  if(area<=120):
-		front()
+		  front()
 	  elif(area>=600):
-		back()
+		  back()
 	  else:
-		stop()
+		  stop()
 	  
 	  
 #----------------------------------------------------------------
@@ -217,7 +230,9 @@ while True:
 		adjustZ(area)    
 	else:
 		stop()
+  #TODO Add moving left and right to image 
 
+  
 	cv2.imshow("input",input)
 	cv2.imshow("HSV", imgHSV)
 	cv2.imshow("Thre", imgThresh)

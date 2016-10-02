@@ -43,6 +43,23 @@ def stop():
 	gpio.output(motorRe, gpio.LOW)
 	gpio.output(motorLe, gpio.LOW)
 
+def right():
+	# Motor right - stop 
+	gpio.output(motorRe, gpio.LOW)
+
+	# Motor left - go foward
+	gpio.output(motorRe, gpio.LOW)
+
+def left():
+	# Motor Right - go foward
+	gpio.output(motorRa, gpio.HIGH)
+	gpio.output(motorRb, gpio.LOW)
+	gpio.output(motorRe, gpio.HIGH)
+
+	# Motor Left - stop
+	gpio.output(motorLe, gpio.LOW)
+
+	
 print "Fowards"
 front()
 sleep(2)
@@ -50,8 +67,13 @@ sleep(2)
 print "Backwards"
 back()
 sleep(2)
-front()
 
+print "Right"
+right()
+sleep(2)
+
+print "Left"
+left()
 sleep(2)
 
 print "stop motor"
